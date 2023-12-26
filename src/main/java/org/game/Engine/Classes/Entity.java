@@ -21,6 +21,12 @@ public class Entity {
         this.transform.attach(this);
         this.transform.position = initialPos;
         this.enabled = enabledAtStart;
+        try {
+            JECEngine.instantiate(this);
+        } catch (NullPointerException e) {
+            JECEngine.init();
+            JECEngine.instantiate(this);
+        }
         start();
     }
 

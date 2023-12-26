@@ -1,10 +1,9 @@
 package org.game;
 
-import org.game.Engine.Classes.Components.Renderer;
 import org.game.Engine.Classes.EngineTime;
+import org.game.Engine.Classes.JECEngine;
 import org.game.Engine.Classes.Vec2;
 import org.game.Engine.Systems.Input;
-import org.game.Engine.Classes.Rect;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,6 +30,7 @@ public class Panel extends JPanel implements Runnable {
         this.addKeyListener(input);
         this.setFocusable(true);
         this.requestFocus();
+        JECEngine.init();
     }
 
     public void startPanelThread() {
@@ -80,6 +80,6 @@ public class Panel extends JPanel implements Runnable {
     public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
         this.graphics = graphics;
-        rect.update(graphics);
+        JECEngine.updateEntities(graphics);
     }
 }

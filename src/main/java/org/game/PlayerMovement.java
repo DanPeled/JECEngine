@@ -19,6 +19,7 @@ public class PlayerMovement extends EntityComponent {
     @Override
     public void update(Graphics g) {
         double deltaTime = EngineTime.deltaTime * 40;
+        entity.transform.position.angle = rotation;
         if (Input.isKeyPressed(KeyEvent.VK_UP)) {
             entity.transform.position.y -= playerSpeed * deltaTime;
         }
