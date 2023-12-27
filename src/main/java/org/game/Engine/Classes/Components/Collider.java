@@ -38,12 +38,6 @@ public class Collider extends EntityComponent {
         double w2 = other.shape.getBounds2D().getWidth();
         double h2 = other.shape.getBounds2D().getHeight();
 
-        // Check for no overlap along the x-axis
-        if (x1 + w1 < x2 || x2 + w2 < x1) {
-            return false;
-        }
-
-        // Check for no overlap along the y-axis
-        return !(y1 + h1 < y2) && !(y2 + h2 < y1);
+        return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2;
     }
 }

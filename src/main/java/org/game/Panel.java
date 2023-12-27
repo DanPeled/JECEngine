@@ -24,12 +24,13 @@ public class Panel extends JPanel implements Runnable {
     Thread panelThread;
     private volatile boolean isRunning = true;
     final int FPS = 60;
-    Rect rect = new Rect(new Vec2(100, 100, 0)), rect2 = new Rect(new Vec2(0, 400, 0));
+    Rect rect = new Rect(new Vec2(100, 100, 0)), rect2 = new Rect(new Vec2(200, 400, 0));
     Graphics graphics;
+    Label xvelLabel = new Label("Y Velocity: 0"), yvelLabel = new Label("X Velocity: 0");
 
     public Panel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
-        this.setBackground(Color.green);
+        this.setBackground(Color.gray);
         this.setDoubleBuffered(true);
         this.addKeyListener(input);
         this.addMouseListener(input);
@@ -38,9 +39,13 @@ public class Panel extends JPanel implements Runnable {
         this.requestFocus();
         JECEngine.init();
         rect2.getComponent(Rigidbody2D.class).setEnabled(false);
-        rect2.getComponent(Collider.class).shape = new Rectangle2D.Double(0, 0, 900, 90);
-        rect2.getComponent(Renderer.class).shape = new Rectangle2D.Double(0, 0, 900, 90);
+        rect2.getComponent(Collider.class).shape = new Rectangle2D.Double(0, 0, 400, 90);
+        rect2.getComponent(Renderer.class).shape = new Rectangle2D.Double(0, 0, 400, 90);
         rect.addComponent(PlayerMovement.class);
+        rect.getComponent(Renderer.class).color = Color.red;
+        rect2.getComponent(Renderer.class).color = Color.BLACK;
+        this.add(xvelLabel);
+        this.add(yvelLabel);
     }
 
     public void startPanelThread() {
@@ -91,5 +96,8 @@ public class Panel extends JPanel implements Runnable {
         super.paintComponent(graphics);
         this.graphics = graphics;
         JECEngine.updateEntities(graphics);
+        yvelLabel.setText(String.format("Y Velocity: %.2f", rect.getComponent(Rigidbody2D.class).velocity.y));
+        xvelLabel.setText(String.format("X Velocity: %.2f", rect.getComponent(Rigidbody2D.class).velocity.x));
+
     }
 }

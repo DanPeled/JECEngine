@@ -36,6 +36,7 @@ public class PlayerMovement extends EntityComponent {
         }
         if (Input.getMouseButtonPressed(MouseEvent.BUTTON1)) {
             entity.transform.position = Input.getMousePosition();
+            entity.getComponent(Rigidbody2D.class).velocity.y = 0;
         }
         rotation += 0.1 * deltaTime;
     }

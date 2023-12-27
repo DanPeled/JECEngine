@@ -1,10 +1,14 @@
 package org.game.Engine.Classes.Components;
 
+import org.game.Engine.Classes.Components.EntityComponent;
+
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 
 public class Renderer extends EntityComponent {
     public Shape shape;
+    public Color color;
+    public boolean fill = true;
 
     @Override
     public void start() {
@@ -23,12 +27,28 @@ public class Renderer extends EntityComponent {
 
     private void render(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
+
+        // Set the color before rendering
+        if (color != null) {
+            g2d.setColor(color);
+        }
+
         AffineTransform transform = new AffineTransform();
-        transform.translate(this.entity.transform.position.x + shape.getBounds2D().getWidth() / 2, this.entity.transform.position.y + shape.getBounds2D().getHeight() / 2.0);
+        double centerX = this.entity.transform.position.x + shape.getBounds2D().getCenterX();
+        double centerY = this.entity.transform.position.y + shape.getBounds2D().getCenterY();
+
+        transform.translate(centerX, centerY);
         transform.rotate(this.entity.transform.position.angle);
         transform.translate(-shape.getBounds2D().getWidth() / 2, -shape.getBounds2D().getHeight() / 2);
-        Shape s = transform.createTransformedShape(shape);
-        g2d.fill(s);
-        g2d.draw(s);
+        Shape transformedShape = transform.createTransformedShape(shape);
+
+        // Fill the shape with the specified color
+        if (color != null && fill) {
+            g2d.fill(transformedShape);
+        }
+
+        // Draw the shape outline
+        g2d.draw(transformedShape);
+        g2d.setColor(Color.black);
     }
 }

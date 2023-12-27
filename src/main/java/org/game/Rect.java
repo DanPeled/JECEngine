@@ -23,7 +23,7 @@ public class Rect extends Entity {
         addComponent(Renderer.class);
         addComponent(Rigidbody2D.class);
         addComponent(Collider.class);
-        shape = new Rectangle2D.Double(0, 0, 80, 90);
+        shape = new Rectangle2D.Double(0, 0, 80, 80);
         getComponent(Collider.class).shape = shape;
         shape = new Rectangle2D.Double(0, 0, 80, 80);
         getComponent(Renderer.class).shape = shape;

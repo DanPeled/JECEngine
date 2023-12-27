@@ -30,4 +30,42 @@ public class Vec2 {
         this.y = y;
         this.angle = angle;
     }
+
+    public static double dist(Vec2 v1, Vec2 v2) {
+        double dx = v1.x - v2.x;
+        double dy = v1.y - v2.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    public double dist(Vec2 other) {
+        return Vec2.dist(this, other);
+    }
+
+    public double magnitude() {
+        return Math.sqrt(x * x + y * y);
+    }
+
+    public Vec2 add(Vec2 other) {
+        this.x += other.x;
+        this.y += other.y;
+        return this;
+    }
+
+    public Vec2 subtract(Vec2 other) {
+        this.x -= other.x;
+        this.y -= other.y;
+        return this;
+    }
+
+    public boolean isZero() {
+        return x == 0 && y == 0;
+    }
+
+    public Vec2 normalized() {
+        return new Vec2(x / magnitude(), y / magnitude());
+    }
+
+    public Vec2 multiply(double scalar) {
+        return new Vec2(x * scalar, y * scalar);
+    }
 }
