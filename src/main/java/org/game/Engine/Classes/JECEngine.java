@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class JECEngine {
-    private static Set<Entity> entities;
+    public static Set<Entity> entities;
 
     public static void init() {
         if (entities == null) {
@@ -19,7 +19,11 @@ public class JECEngine {
 
     public static void updateEntities(Graphics g) {
         for (Entity e : entities) {
-            e.update(g);
+            try {
+                e.update(g);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 }

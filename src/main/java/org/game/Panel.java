@@ -1,5 +1,8 @@
 package org.game;
 
+import org.game.Engine.Classes.Components.Collider;
+import org.game.Engine.Classes.Components.Renderer;
+import org.game.Engine.Classes.Components.Rigidbody2D;
 import org.game.Engine.Classes.EngineTime;
 import org.game.Engine.Classes.JECEngine;
 import org.game.Engine.Classes.Vec2;
@@ -7,6 +10,7 @@ import org.game.Engine.Systems.Input;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 
 public class Panel extends JPanel implements Runnable {
     final int originalTileSize = 16;
@@ -20,7 +24,7 @@ public class Panel extends JPanel implements Runnable {
     Thread panelThread;
     private volatile boolean isRunning = true;
     final int FPS = 60;
-    Rect rect = new Rect(new Vec2(100, 100, 0));
+    Rect rect = new Rect(new Vec2(100, 100, 0)), rect2 = new Rect(new Vec2(0, 400, 0));
     Graphics graphics;
 
     public Panel() {
@@ -28,9 +32,15 @@ public class Panel extends JPanel implements Runnable {
         this.setBackground(Color.green);
         this.setDoubleBuffered(true);
         this.addKeyListener(input);
+        this.addMouseListener(input);
+        this.addMouseMotionListener(input);
         this.setFocusable(true);
         this.requestFocus();
         JECEngine.init();
+        rect2.getComponent(Rigidbody2D.class).setEnabled(false);
+        rect2.getComponent(Collider.class).shape = new Rectangle2D.Double(0, 0, 900, 90);
+        rect2.getComponent(Renderer.class).shape = new Rectangle2D.Double(0, 0, 900, 90);
+        rect.addComponent(PlayerMovement.class);
     }
 
     public void startPanelThread() {

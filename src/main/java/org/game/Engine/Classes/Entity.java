@@ -54,10 +54,10 @@ public class Entity {
 
     }
 
-    public void update(Graphics g) {
+    public void update(Graphics g) throws Exception {
         if (!enabled) return;
         for (EntityComponent comp : components) {
-            comp.update(g);
+            if (comp.getEnabled()) comp.update(g);
         }
     }
 

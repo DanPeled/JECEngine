@@ -7,6 +7,7 @@ import org.game.Engine.Classes.Entity;
 import org.game.Engine.Classes.Vec2;
 import org.game.PlayerMovement;
 
+import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 
@@ -18,9 +19,13 @@ public class Rect extends Entity {
 
     @Override
     public void start() {
+        Shape shape = new Rectangle2D.Double(0, 0, 80, 80);
         addComponent(Renderer.class);
         addComponent(Rigidbody2D.class);
-        getComponent(Renderer.class).shape = new Rectangle2D.Double(0, 0, 80, 80);
-        addComponent(PlayerMovement.class);
+        addComponent(Collider.class);
+        shape = new Rectangle2D.Double(0, 0, 80, 90);
+        getComponent(Collider.class).shape = shape;
+        shape = new Rectangle2D.Double(0, 0, 80, 80);
+        getComponent(Renderer.class).shape = shape;
     }
 }

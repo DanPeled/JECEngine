@@ -9,16 +9,16 @@ public abstract class EntityComponent {
     public Entity entity;
 
     public EntityComponent() {
-        start();
     }
 
     public void attach(Entity parentObj) {
         this.entity = parentObj;
+        start();
     }
 
     public abstract void start();
 
-    public abstract void update(Graphics g);
+    public abstract void update(Graphics g) throws Exception;
 
     public abstract void onStop();
 
