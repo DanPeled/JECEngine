@@ -3,8 +3,8 @@ package org.game;
 import org.game.Engine.Classes.Components.Collider;
 import org.game.Engine.Classes.Components.Renderer;
 import org.game.Engine.Classes.Components.Rigidbody2D;
-import org.game.Engine.Classes.EngineTime;
-import org.game.Engine.Classes.JECEngine;
+import org.game.Engine.Systems.EngineTime;
+import org.game.Engine.Systems.JECEngine;
 import org.game.Engine.Classes.Vec2;
 import org.game.Engine.Systems.Input;
 
@@ -38,6 +38,7 @@ public class Panel extends JPanel implements Runnable {
         this.setFocusable(true);
         this.requestFocus();
         JECEngine.init();
+        EngineTime.init();
         rect2.getComponent(Rigidbody2D.class).setEnabled(false);
         rect2.getComponent(Collider.class).shape = new Rectangle2D.Double(0, 0, 400, 90);
         rect2.getComponent(Renderer.class).shape = new Rectangle2D.Double(0, 0, 400, 90);
@@ -67,26 +68,31 @@ public class Panel extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        double drawInterval = 1000000000.0 / FPS;
-        long lastTime = System.nanoTime();
+        long lastTime = System.currentTimeMillis();
         long currentTime;
         long timer = 0;
         long drawCount = 0;
         while (isRunning) {
-            currentTime = System.nanoTime();
-            EngineTime.deltaTime += (currentTime - lastTime) / drawInterval;
-            timer += (currentTime - lastTime);
+            currentTime = System.currentTimeMillis();
+            EngineTime.deltaTime = (currentTime - lastTime) / 1000.0;  // Update deltaTime in seconds
             lastTime = currentTime;
-            if (EngineTime.deltaTime >= 1) {
-                update();
-                repaint();
-                EngineTime.deltaTime--;
-                drawCount++;
-            }
-            if (timer >= 1000000000) {
+            timer += EngineTime.deltaTime;
+
+            if (timer >= 1.0) {
                 System.out.println("FPS: " + drawCount);
                 drawCount = 0;
                 timer = 0;
+            }
+
+            update();
+            repaint();
+            drawCount++;
+
+            try {
+                // Adjust the sleep time to achieve the desired FPS
+                Thread.sleep(1000 / FPS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -99,8 +105,8 @@ public class Panel extends JPanel implements Runnable {
         super.paintComponent(graphics);
         this.graphics = graphics;
         JECEngine.updateEntities(graphics);
+        Input.resetClickStates();
         yvelLabel.setText(String.format("Y Velocity: %.2f", rect.getComponent(Rigidbody2D.class).velocity.y));
         xvelLabel.setText(String.format("X Velocity: %.2f", rect.getComponent(Rigidbody2D.class).velocity.x));
-
     }
 }

@@ -1,7 +1,8 @@
 package org.game.Engine.Classes.Components;
 
 import org.game.Engine.Classes.Entity;
-import org.game.Engine.Classes.JECEngine;
+import org.game.Engine.Systems.EngineTime;
+import org.game.Engine.Systems.JECEngine;
 import org.game.Engine.Classes.Vec2;
 
 import java.awt.*;
@@ -130,7 +131,21 @@ public class Rigidbody2D extends EntityComponent {
     private void applyGravity() {
         if (keepFalling) {
             velocity.y += 0.5;
+
+            // Apply damping to x velocity
+            if (velocity.x != 0) {
+                double dampingFactor = 0.02; // You can adjust this value based on the desired damping strength
+
+                // Gradually reduce x velocity towards 0
+                velocity.x *= 1 - dampingFactor * EngineTime.deltaTime;
+
+                // Ensure x velocity doesn't become too small
+                if (Math.abs(velocity.x) < 0.01) {
+                    velocity.x = 0;
+                }
+            }
         }
+
         if (velocity.y != 0) {
             keepFalling = true;
         }

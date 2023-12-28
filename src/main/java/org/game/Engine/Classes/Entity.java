@@ -2,6 +2,7 @@ package org.game.Engine.Classes;
 
 import org.game.Engine.Classes.Components.EntityComponent;
 import org.game.Engine.Classes.Components.Transform;
+import org.game.Engine.Systems.JECEngine;
 
 import java.awt.*;
 import java.util.HashSet;

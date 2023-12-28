@@ -2,7 +2,7 @@ package org.game;
 
 import org.game.Engine.Classes.Components.EntityComponent;
 import org.game.Engine.Classes.Components.Rigidbody2D;
-import org.game.Engine.Classes.EngineTime;
+import org.game.Engine.Systems.EngineTime;
 import org.game.Engine.Systems.Input;
 
 import java.awt.*;
@@ -10,7 +10,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 public class PlayerMovement extends EntityComponent {
-    int playerSpeed = 5;
+    int playerSpeed = 300;
     double rotation = 0;
     Rigidbody2D rigidbody2D;
 
@@ -21,7 +21,7 @@ public class PlayerMovement extends EntityComponent {
 
     @Override
     public void update(Graphics g) {
-        double deltaTime = EngineTime.deltaTime * 40;
+        double deltaTime = EngineTime.deltaTime ;
         if (Input.isKeyPressed(KeyEvent.VK_UP)) {
             rigidbody2D.velocity.y -= playerSpeed * deltaTime;
         }
@@ -34,7 +34,7 @@ public class PlayerMovement extends EntityComponent {
         if (Input.isKeyPressed(KeyEvent.VK_RIGHT)) {
             rigidbody2D.velocity.x += playerSpeed * deltaTime;
         }
-        if (Input.getMouseButtonPressed(MouseEvent.BUTTON1)) {
+        if (Input.isMouseButtonPressed(MouseEvent.BUTTON1)) {
             entity.transform.position = Input.getMousePosition();
             entity.getComponent(Rigidbody2D.class).velocity.y = 0;
         }

@@ -1,4 +1,6 @@
-package org.game.Engine.Classes;
+package org.game.Engine.Systems;
+
+import org.game.Engine.Classes.Entity;
 
 import java.awt.*;
 import java.util.HashSet;
