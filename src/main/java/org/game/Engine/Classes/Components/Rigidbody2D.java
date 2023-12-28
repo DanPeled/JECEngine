@@ -5,7 +5,7 @@ import org.game.Engine.Classes.JECEngine;
 import org.game.Engine.Classes.Vec2;
 
 import java.awt.*;
-import java.util.Objects;
+import java.util.Arrays;
 
 /**
  * The Rigidbody2D class represents a 2D rigid body component that handles physics simulations,
@@ -13,31 +13,28 @@ import java.util.Objects;
  */
 public class Rigidbody2D extends EntityComponent {
 
-    /**
-     * The velocity of the rigid body in 2D space.
-     */
-    public Vec2 velocity = new Vec2(3, 12);
     private static final double friction = 0.01;
-    /**
-     * The mass of the rigid body.
-     */
-    public double mass = 1;
-
-    /**
-     * The gravity scale applied to the rigid body.
-     */
-    public double gravityScale = 1;
-
-    /**
-     * Flag indicating whether the rigid body should keep falling due to gravity.
-     */
-    private boolean keepFalling = true;
-
     /**
      * The elasticity of the rigid body, representing the bounciness on collisions.
      * Should be a number between 1 (fully elastic) and 0 (not elastic at all).
      */
     private final double elasticity = 0.7;
+    /**
+     * The velocity of the rigid body in 2D space.
+     */
+    public Vec2 velocity = new Vec2(3, 12);
+    /**
+     * The mass of the rigid body.
+     */
+    public double mass = 1;
+    /**
+     * The gravity scale applied to the rigid body.
+     */
+    public double gravityScale = 1;
+    /**
+     * Flag indicating whether the rigid body should keep falling due to gravity.
+     */
+    private boolean keepFalling = true;
 
     /**
      * Initializes and starts the rigid body component.
@@ -86,7 +83,7 @@ public class Rigidbody2D extends EntityComponent {
                     keepFalling = true;
                 }
             } catch (NullPointerException error) {
-                throw new Exception(String.format("A collider is missing on: %s", this.entity.toString()));
+                throw new Exception(String.format("A collider is missing on: %s: \n%s", this.entity.toString(), Arrays.toString(error.getStackTrace())));
             }
         }
     }
@@ -109,11 +106,11 @@ public class Rigidbody2D extends EntityComponent {
                 if (!e.equals(this.entity)) {
                     Collider otherCollider = ((Entity) e).getComponent(Collider.class);
                     if (thisCollider.isColliding(otherCollider)) {
-                        double PUSH_FACTOR = velocity.magnitude() * 0.01;
+                        double PUSH_FACTOR = velocity.magnitude() * 0.2;
 
                         // Apply pushing force to both objects
                         Vec2 pushForce = velocity.normalized().multiply(-elasticity * PUSH_FACTOR);
-                        this.entity.transform.position.add(pushForce.multiply(3.0 * velocity.y)); // No idea why, but this math makes it work
+                        this.entity.transform.position.add(pushForce.multiply(velocity.y)); // No idea why, but this math makes it work
                     }
                 }
             }

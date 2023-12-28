@@ -10,7 +10,7 @@ import java.util.Set;
 public class Entity {
     public Set<EntityComponent> components = new HashSet<>();
     public Transform transform;
-    private boolean enabled;
+    private boolean enabled = true;
 
     public Entity(Vec2 initialPos) {
         this(initialPos, true);

@@ -44,6 +44,9 @@ public class Panel extends JPanel implements Runnable {
         rect.addComponent(PlayerMovement.class);
         rect.getComponent(Renderer.class).color = Color.red;
         rect2.getComponent(Renderer.class).color = Color.BLACK;
+        xvelLabel.setForeground(new Color(0, 0, 0, 0));
+        yvelLabel.setForeground(new Color(0, 0, 0, 0));
+
         this.add(xvelLabel);
         this.add(yvelLabel);
     }
