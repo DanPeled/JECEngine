@@ -12,7 +12,6 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 
 public class Rect extends Entity {
-
     public Rect(Vec2 initialPos) {
         super(initialPos);
     }

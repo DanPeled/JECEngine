@@ -34,11 +34,11 @@ public class Renderer extends EntityComponent {
         }
 
         AffineTransform transform = new AffineTransform();
-        double centerX = this.entity.transform.position.x + shape.getBounds2D().getCenterX();
-        double centerY = this.entity.transform.position.y + shape.getBounds2D().getCenterY();
+        double centerX = this.entity.transform.getPosition().x + shape.getBounds2D().getCenterX();
+        double centerY = this.entity.transform.getPosition().y + shape.getBounds2D().getCenterY();
 
         transform.translate(centerX, centerY);
-        transform.rotate(this.entity.transform.position.angle);
+        transform.rotate(this.entity.transform.getPosition().angle);
         transform.translate(-shape.getBounds2D().getWidth() / 2, -shape.getBounds2D().getHeight() / 2);
         Shape transformedShape = transform.createTransformedShape(shape);
 

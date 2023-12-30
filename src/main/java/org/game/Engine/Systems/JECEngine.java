@@ -1,27 +1,48 @@
 package org.game.Engine.Systems;
 
 import org.game.Engine.Classes.Entity;
+import org.game.Engine.Systems.Input.Input;
 
+import javax.swing.*;
 import java.awt.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The main engine class for managing entities in the game.
  */
 public class JECEngine {
+    private static final Input input = new Input();
+    private static final int originalTileSize = 16;
+    private static final int scale = 3;
+    private static final int tileSize = originalTileSize * scale;
+    private static final int maxScreenCol = 16;
+    private static final int maxScreenRow = 12;
+    private static final int screenWidth = tileSize * maxScreenCol;
+    private static final int screenHeight = tileSize * maxScreenRow;
 
     /**
      * Set containing all entities currently active in the game.
      */
-    public static Set<Entity> entities;
+    public static HashMap<Integer, Entity> entities;
+
+    public static void setPanel(JPanel panel) {
+        panel.setPreferredSize(new Dimension(screenWidth, screenHeight));
+        panel.setBackground(Color.gray);
+        panel.setDoubleBuffered(true);
+        panel.addKeyListener(input);
+        panel.addMouseListener(input);
+        panel.addMouseMotionListener(input);
+        panel.setFocusable(true);
+        panel.requestFocus();
+    }
 
     /**
      * Initializes the game engine by creating the set of entities if it does not exist.
      */
     public static void init() {
         if (entities == null) {
-            entities = new HashSet<>();
+            entities = new HashMap<>();
+            EngineTime.init();
         }
     }
 
@@ -31,7 +52,7 @@ public class JECEngine {
      * @param entity The entity to be instantiated and added.
      */
     public static void instantiate(Entity entity) {
-        entities.add(entity);
+        entities.put(entity.getID(), entity);
     }
 
     /**
@@ -41,14 +62,20 @@ public class JECEngine {
      * @throws RuntimeException If an exception occurs during the update process.
      */
     public static void updateEntities(Graphics g) {
-        for (Entity e : entities) {
+        for (Entity e : entities.values()) {
             try {
-                if (e.getEnabled()) {
+                int parentId = e.getParentID();
+                Entity parent = entities.get(parentId);
+                boolean isEnabled = e.getEnabled();
+                boolean isParentEnabled = parent == null || parent.getEnabled();
+
+                if (isEnabled && isParentEnabled) {
                     e.update(g);
                 }
             } catch (Exception ex) {
-                throw new RuntimeException("Error updating entity: " + e.getClass().getSimpleName(), ex);
+                throw new RuntimeException(String.format("Error updating entity: %s ID: %d", e.getClass().getSimpleName(), e.getID()), ex);
             }
         }
     }
+
 }

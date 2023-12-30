@@ -16,6 +16,8 @@ public abstract class EntityComponent {
 
     /**
      * The entity to which this component is attached.
+     *
+     * @see #attach(Entity)
      */
     public Entity entity;
 
@@ -46,6 +48,9 @@ public abstract class EntityComponent {
     /**
      * Method called when the component is disabled.
      * Override this method to perform cleanup actions when the component is turned off.
+     *
+     * @see #setEnabled(boolean)
+     * @see #onStop()
      */
     public abstract void onStop();
 

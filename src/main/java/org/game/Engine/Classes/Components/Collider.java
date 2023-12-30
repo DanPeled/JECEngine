@@ -63,13 +63,13 @@ public class Collider extends EntityComponent {
      * @return True if a collision is detected, false otherwise.
      */
     public boolean isColliding(Collider other) {
-        double x1 = entity.transform.position.x;
-        double y1 = entity.transform.position.y;
+        double x1 = entity.transform.getPosition().x;
+        double y1 = entity.transform.getPosition().y;
         double w1 = shape.getBounds2D().getWidth();
         double h1 = shape.getBounds2D().getHeight();
 
-        double x2 = other.entity.transform.position.x;
-        double y2 = other.entity.transform.position.y;
+        double x2 = other.entity.transform.getPosition().x;
+        double y2 = other.entity.transform.getPosition().y;
         double w2 = other.shape.getBounds2D().getWidth();
         double h2 = other.shape.getBounds2D().getHeight();
 

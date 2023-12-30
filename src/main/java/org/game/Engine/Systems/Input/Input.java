@@ -1,4 +1,4 @@
-package org.game.Engine.Systems;
+package org.game.Engine.Systems.Input;
 
 import org.game.Engine.Classes.Vec2;
 
@@ -136,7 +136,7 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
     }
 
     /**
-     * Checks if a specific mouse button was clicked (pressed and released) in the current frame.
+     * Checks if a specific mouse button was <b>clicked (pressed and released)</b> in the current frame.
      *
      * @param button The code of the mouse button to check.
      * @return True if the button was clicked, false otherwise.
@@ -148,14 +148,14 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener {
     /**
      * Gets the current mouse position.
      *
-     * @return A Vec2 object representing the mouse position.
+     * @return A {@link Vec2} object representing the mouse position.
      */
     public static Vec2 getMousePosition() {
         return new Vec2(mouseX, mouseY);
     }
 
     /**
-     * Resets the clicked state of keys and mouse buttons at the end of each frame.
+     * Resets the <b>clicked</b> state of keys and mouse buttons at the end of each frame.
      */
     public static void resetClickStates() {
         clickedKeys.clear();

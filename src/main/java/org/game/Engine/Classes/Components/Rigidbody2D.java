@@ -61,8 +61,8 @@ public class Rigidbody2D extends EntityComponent {
      * Updates the position of the rigid body based on its velocity and gravity.
      */
     private void updatePosition() {
-        this.entity.transform.position.x += mass * velocity.x * gravityScale;
-        this.entity.transform.position.y += mass * velocity.y * gravityScale;
+        this.entity.transform.setX(entity.transform.getPosition().x + mass * velocity.x * gravityScale);
+        this.entity.transform.setPosition(new Vec2(entity.transform.getPosition().x, entity.transform.getPosition().y + mass * velocity.y * gravityScale));
     }
 
     /**
@@ -71,7 +71,7 @@ public class Rigidbody2D extends EntityComponent {
      * @throws Exception Thrown when a collider is missing on the current entity.
      */
     private void handleCollisions() throws Exception {
-        for (Object e : JECEngine.entities.toArray()) {
+        for (Object e : JECEngine.entities.values().toArray()) {
             if (e.equals(this.entity)) {
                 continue;
             }
@@ -103,7 +103,7 @@ public class Rigidbody2D extends EntityComponent {
             // Apply a pushing force to the colliding object
             Collider thisCollider = entity.getComponent(Collider.class);
 
-            for (Object e : JECEngine.entities.toArray()) {
+            for (Object e : JECEngine.entities.values().toArray()) {
                 if (!e.equals(this.entity)) {
                     Collider otherCollider = ((Entity) e).getComponent(Collider.class);
                     if (thisCollider.isColliding(otherCollider)) {
@@ -111,7 +111,7 @@ public class Rigidbody2D extends EntityComponent {
 
                         // Apply pushing force to both objects
                         Vec2 pushForce = velocity.normalized().multiply(-elasticity * PUSH_FACTOR);
-                        this.entity.transform.position.add(pushForce.multiply(velocity.y)); // No idea why, but this math makes it work
+                        this.entity.transform.setPosition(this.entity.transform.getPosition().add(pushForce.multiply(velocity.y))); // No idea why, but this math makes it work
                     }
                 }
             }
@@ -137,7 +137,7 @@ public class Rigidbody2D extends EntityComponent {
                 double dampingFactor = 0.02; // You can adjust this value based on the desired damping strength
 
                 // Gradually reduce x velocity towards 0
-                velocity.x *= 1 - dampingFactor * EngineTime.deltaTime;
+                velocity.x *= 1 - dampingFactor * EngineTime.deltaTime * elasticity;
 
                 // Ensure x velocity doesn't become too small
                 if (Math.abs(velocity.x) < 0.01) {
