@@ -25,6 +25,7 @@ public class Panel extends JPanel implements Runnable {
         JECEngine.setPanel(this);
         JECEngine.init();
         rect2.getComponent(Rigidbody2D.class).setEnabled(false);
+        rect.getComponent(Rigidbody2D.class).setEnabled(true);
         rect2.getComponent(Collider.class).shape = new Rectangle2D.Double(0, 0, 600, 90);
         rect2.getComponent(Renderer.class).shape = new Rectangle2D.Double(0, 0, 600, 90);
         rect.addComponent(PlayerMovement.class);
@@ -35,6 +36,7 @@ public class Panel extends JPanel implements Runnable {
         this.add(xvelLabel);
         this.add(yvelLabel);
         this.add(fpsLabel);
+
     }
 
     public void startPanelThread() {
@@ -53,35 +55,36 @@ public class Panel extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        long lastTime = System.currentTimeMillis();
-        long currentTime;
-        long timer = 0;
-        long drawCount = 0;
+        long lastTime = System.nanoTime();
+        double nsPerFrame = 1_000_000_000.0 / FPS;
+        long frameCounter = 0;
+        long timer = System.currentTimeMillis();
+
         while (isRunning) {
-            currentTime = System.currentTimeMillis();
-            EngineTime.deltaTime = (currentTime - lastTime) / 1000.0;  // Update deltaTime in seconds
-            lastTime = currentTime;
-            timer += EngineTime.deltaTime;
+            long now = System.nanoTime();
+            long elapsed = now - lastTime;
 
-            if (timer >= 2) {
-                System.out.println("FPS: " + drawCount);
-                fpsLabel.setText(String.format("FPS: %.2f", drawCount));
-                drawCount = 0;
-                timer = 0;
-            }
+            if (elapsed > nsPerFrame) {
+                double deltaTime = elapsed / 1_000_000_000.0;
+                lastTime = now;
+                EngineTime.deltaTime = deltaTime;
+                update();
+                repaint();
+                frameCounter++;
 
-            update();
-            repaint();
-            drawCount++;
+                if (System.currentTimeMillis() - timer > 1000) {
+                    double fps = frameCounter / deltaTime;
+                    SwingUtilities.invokeLater(() -> {
+                        fpsLabel.setText(String.format("FPS: %.2f", fps));
+                    });
 
-            try {
-                // Adjust the sleep time to achieve the desired FPS
-                Thread.sleep(1000 / FPS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                    frameCounter = 0;
+                    timer = System.currentTimeMillis();
+                }
             }
         }
     }
+
 
     public void update() {
 

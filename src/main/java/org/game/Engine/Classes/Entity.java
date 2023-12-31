@@ -63,7 +63,7 @@ public class Entity {
     /**
      * Constructs an entity with an initial position.
      *
-     * @param initialPos        The initial position of the entity.
+     * @param initialPos The initial position of the entity.
      * @see #Entity(Vec2, boolean)
      */
     public Entity(Vec2 initialPos) {
@@ -73,8 +73,8 @@ public class Entity {
     /**
      * Constructs an entity with an initial position and specified initial state.
      *
-     * @param initialPos        The initial position of the entity.
-     * @param enabledAtStart    The initial state of the entity (enabled or disabled).
+     * @param initialPos     The initial position of the entity.
+     * @param enabledAtStart The initial state of the entity (enabled or disabled).
      */
     public Entity(Vec2 initialPos, boolean enabledAtStart) {
         this.childrenIDs = new HashSet<>();
@@ -95,8 +95,8 @@ public class Entity {
     /**
      * Adds a component of the specified class to the entity.
      *
-     * @param componentClass    The class of the component to be added.
-     * @param <T>               The type of the component.
+     * @param componentClass The class of the component to be added.
+     * @param <T>            The type of the component.
      */
     public <T extends EntityComponent> void addComponent(Class<T> componentClass) {
         try {
@@ -111,9 +111,9 @@ public class Entity {
     /**
      * Gets a component of the specified class attached to the entity.
      *
-     * @param componentClass    The class of the component to be retrieved.
-     * @param <T>               The type of the component.
-     * @return                  The component instance, or null if not found.
+     * @param componentClass The class of the component to be retrieved.
+     * @param <T>            The type of the component.
+     * @return The component instance, or null if not found.
      */
     public <T extends EntityComponent> T getComponent(Class<T> componentClass) {
         for (EntityComponent component : components) {
@@ -134,8 +134,8 @@ public class Entity {
     /**
      * Updates the entity, invoking the update method of each enabled component.
      *
-     * @param g     The graphics context for rendering.
-     * @throws Exception    If an exception occurs during the update.
+     * @param g The graphics context for rendering.
+     * @throws Exception If an exception occurs during the update.
      */
     public void update(Graphics g) throws Exception {
         if (!enabled) return;
@@ -147,7 +147,7 @@ public class Entity {
     /**
      * Gets the enabled state of the entity.
      *
-     * @return  True if the entity is enabled, false otherwise.
+     * @return True if the entity is enabled, false otherwise.
      */
     public boolean getEnabled() {
         return this.enabled;
@@ -156,7 +156,7 @@ public class Entity {
     /**
      * Sets the enabled state of the entity.
      *
-     * @param enabled   The desired enabled state.
+     * @param enabled The desired enabled state.
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
@@ -165,17 +165,23 @@ public class Entity {
     /**
      * Adds a child entity to the entity, establishing a parent-child relationship.
      *
-     * @param child     The child entity to be added.
+     * @param child The child entity to be added.
      */
     public void addChild(Entity child) {
         childrenIDs.add(child.getID());
         child.parentID = this.parentID;
+
+        System.out.println("Parent position: " + transform.getPosition());
+        System.out.println("Child position: " + child.transform.getPosition());
+
+        child.transform.setParentOffset(transform.getPosition().subtract(child.transform.getPosition()));
     }
+
 
     /**
      * Gets the parent identifier of the entity.
      *
-     * @return  The parent identifier.
+     * @return The parent identifier.
      */
     public int getParentID() {
         return this.parentID;
@@ -184,7 +190,7 @@ public class Entity {
     /**
      * Gets an array of identifiers for the child entities.
      *
-     * @return  An array of child entity identifiers.
+     * @return An array of child entity identifiers.
      */
     public Object[] getChildrenIDs() {
         return childrenIDs.toArray();

@@ -10,7 +10,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 public class PlayerMovement extends EntityComponent {
-    int playerSpeed = 300;
+    int playerSpeed = 10;
     double rotation = 0;
     Rigidbody2D rigidbody2D;
 

@@ -9,7 +9,7 @@ public class Vec2 {
     public double angle;
 
     /**
-     * Constructs a Vec2 with the specified x and y components.
+     * Constructs a {@link Vec2} with the specified x and y components.
      *
      * @param x The x-component of the vector.
      * @param y The y-component of the vector.
@@ -17,6 +17,18 @@ public class Vec2 {
     public Vec2(double x, double y) {
         this(x, y, 0);
     }
+
+    /**
+     * Constructs a new {@link Vec2} object representing the vector between two points in 2D space.
+     *
+     * @param start The starting point vector.
+     * @param end   The ending point vector.
+     */
+    public Vec2(Vec2 start, Vec2 end) {
+        this.x = end.x - start.x;
+        this.y = end.y - start.y;
+    }
+
 
     /**
      * Constructs a Vec2 with the specified x, y components, and angle.
@@ -133,5 +145,18 @@ public class Vec2 {
      */
     public static double dotProduct(Vec2 v1, Vec2 v2) {
         return v1.x * v2.x + v1.y * v2.y;
+    }
+
+    public double dotProduct(Vec2 v2) {
+        return Vec2.dotProduct(this, v2);
+    }
+
+    public Vec2 divide(double scalar) {
+        return new Vec2(x / scalar, y / scalar);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("X: %f Y: %f", x, y);
     }
 }

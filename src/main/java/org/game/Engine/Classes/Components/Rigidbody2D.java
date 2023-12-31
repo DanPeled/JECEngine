@@ -6,7 +6,6 @@ import org.game.Engine.Systems.JECEngine;
 import org.game.Engine.Classes.Vec2;
 
 import java.awt.*;
-import java.util.Arrays;
 
 /**
  * The Rigidbody2D class represents a 2D rigid body component that handles physics simulations,
@@ -14,28 +13,12 @@ import java.util.Arrays;
  */
 public class Rigidbody2D extends EntityComponent {
 
-    private static final double friction = 0.01;
-    /**
-     * The elasticity of the rigid body, representing the bounciness on collisions.
-     * Should be a number between 1 (fully elastic) and 0 (not elastic at all).
-     */
-    private final double elasticity = 0.7;
-    /**
-     * The velocity of the rigid body in 2D space.
-     */
-    public Vec2 velocity = new Vec2(3, 12);
-    /**
-     * The mass of the rigid body.
-     */
+    private static final double elasticity = -0.8;
+    private static final double friction = 1;
+
+    public Vec2 velocity = new Vec2(0, 0);
     public double mass = 1;
-    /**
-     * The gravity scale applied to the rigid body.
-     */
     public double gravityScale = 1;
-    /**
-     * Flag indicating whether the rigid body should keep falling due to gravity.
-     */
-    private boolean keepFalling = true;
 
     /**
      * Initializes and starts the rigid body component.
@@ -52,17 +35,32 @@ public class Rigidbody2D extends EntityComponent {
      */
     @Override
     public void update(Graphics g) throws Exception {
+        applyForces();
         updatePosition();
         handleCollisions();
-        applyGravity();
     }
 
     /**
-     * Updates the position of the rigid body based on its velocity and gravity.
+     * Applies external forces to the rigid body, such as gravity and friction.
+     */
+    private void applyForces() {
+        Vec2 gravityForce = new Vec2(0, mass * 980 * gravityScale); // Acceleration due to gravity
+        Vec2 netForce = gravityForce; // Add other forces as needed
+        Vec2 acceleration = netForce.divide(mass);
+        velocity = velocity.add(acceleration.multiply(EngineTime.deltaTime));
+
+        // Apply friction (drag force) with dampening over time
+        double dampingFactor = 0.05; // Adjust this value based on desired damping strength
+        velocity = velocity.multiply(1 - dampingFactor * EngineTime.deltaTime);
+    }
+
+    /**
+     * Updates the position of the rigid body based on its velocity.
      */
     private void updatePosition() {
-        this.entity.transform.setX(entity.transform.getPosition().x + mass * velocity.x * gravityScale);
-        this.entity.transform.setPosition(new Vec2(entity.transform.getPosition().x, entity.transform.getPosition().y + mass * velocity.y * gravityScale));
+        Vec2 position = entity.transform.getPosition();
+        position = position.add(velocity.multiply(EngineTime.deltaTime));
+        entity.transform.setPosition(position);
     }
 
     /**
@@ -71,84 +69,54 @@ public class Rigidbody2D extends EntityComponent {
      * @throws Exception Thrown when a collider is missing on the current entity.
      */
     private void handleCollisions() throws Exception {
+        Collider thisCollider = entity.getComponent(Collider.class);
+        if (thisCollider == null) {
+            throw new Exception("A collider is missing on the entity.");
+        }
+
         for (Object e : JECEngine.entities.values().toArray()) {
             if (e.equals(this.entity)) {
                 continue;
             }
-            Collider other = ((Entity) e).getComponent(Collider.class);
-            try {
-                Collider thisCollider = entity.getComponent(Collider.class);
-                if (thisCollider.isColliding(other)) {
-                    handleCollisionResponse();
-                } else {
-                    keepFalling = true;
-                }
-            } catch (NullPointerException error) {
-                throw new Exception(String.format("A collider is missing on: %s: \n%s", this.entity.toString(), Arrays.toString(error.getStackTrace())));
+
+            Collider otherCollider = ((Entity) e).getComponent(Collider.class);
+            if (otherCollider != null && thisCollider.isColliding(otherCollider)) {
+                resolveCollision(thisCollider, otherCollider);
             }
         }
     }
 
     /**
      * Handles the response when a collision occurs, including bouncing and pushing forces.
+     *
+     * @param thisCollider  The collider of the current rigid body.
+     * @param otherCollider The collider of the colliding entity.
      */
-    private void handleCollisionResponse() {
-        if (keepFalling || !velocity.isZero()) {
-            keepFalling = false;
+    private void resolveCollision(Collider thisCollider, Collider otherCollider) {
+        Vec2 relativeVelocity = velocity.subtract(otherCollider.entity.getComponent(Rigidbody2D.class).velocity);
+        Vec2 normal = thisCollider.calculateCollisionNormal(otherCollider);
+        double relativeSpeed = relativeVelocity.dotProduct(normal);
 
-            // Reverse the velocity for a basic bounce with friction
-            velocity.x = -velocity.x * elasticity - Math.signum(velocity.x) * friction;
-            velocity.y = -velocity.y * elasticity - friction;
-
-            // Apply a pushing force to the colliding object
-            Collider thisCollider = entity.getComponent(Collider.class);
-
-            for (Object e : JECEngine.entities.values().toArray()) {
-                if (!e.equals(this.entity)) {
-                    Collider otherCollider = ((Entity) e).getComponent(Collider.class);
-                    if (thisCollider.isColliding(otherCollider)) {
-                        double PUSH_FACTOR = velocity.magnitude() * 0.2;
-
-                        // Apply pushing force to both objects
-                        Vec2 pushForce = velocity.normalized().multiply(-elasticity * PUSH_FACTOR);
-                        this.entity.transform.setPosition(this.entity.transform.getPosition().add(pushForce.multiply(velocity.y))); // No idea why, but this math makes it work
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Resets the velocity of the rigid body.
-     */
-    private void resetVelocity() {
-        // TODO: Implementation for resetting velocity if needed. (idfk if I need)
-    }
-
-    /**
-     * Applies gravity to the rigid body, adjusting the vertical velocity.
-     */
-    private void applyGravity() {
-        if (keepFalling) {
-            velocity.y += 0.5;
-
-            // Apply damping to x velocity
-            if (velocity.x != 0) {
-                double dampingFactor = 0.02; // You can adjust this value based on the desired damping strength
-
-                // Gradually reduce x velocity towards 0
-                velocity.x *= 1 - dampingFactor * EngineTime.deltaTime * elasticity;
-
-                // Ensure x velocity doesn't become too small
-                if (Math.abs(velocity.x) < 0.01) {
-                    velocity.x = 0;
-                }
-            }
+        if (relativeSpeed > 0) {
+            // Objects are moving apart; no action needed
+            return;
         }
 
-        if (velocity.y != 0) {
-            keepFalling = true;
-        }
+        double impulse = -(1 + elasticity) * relativeSpeed / (1 / mass + 1 / otherCollider.entity.getComponent(Rigidbody2D.class).mass);
+
+        // Update velocities
+        velocity = velocity.add(normal.multiply(impulse / mass));
+        otherCollider.entity.getComponent(Rigidbody2D.class).velocity = otherCollider.entity.getComponent(Rigidbody2D.class).velocity.subtract(normal.multiply(impulse / otherCollider.entity.getComponent(Rigidbody2D.class).mass));
+
+        // Apply friction
+        Vec2 tangent = relativeVelocity.subtract(normal.multiply(relativeVelocity.dotProduct(normal)));
+        tangent = tangent.normalized();
+
+        double frictionImpulse = -relativeVelocity.dotProduct(tangent) * friction;
+
+        // Update velocities with friction
+        velocity = velocity.add(tangent.multiply(frictionImpulse / mass));
+        otherCollider.entity.getComponent(Rigidbody2D.class).velocity = otherCollider.entity.getComponent(Rigidbody2D.class).velocity.subtract(tangent.multiply(frictionImpulse / otherCollider.entity.getComponent(Rigidbody2D.class).mass));
     }
 
     /**
